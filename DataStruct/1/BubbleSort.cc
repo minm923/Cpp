@@ -15,7 +15,7 @@ void BubbleSort(int * arr, int n)
     while (!sorted)
     {
         sorted = true;
-        for(int i=1; i<n; ++i)
+        for(int i=1; i<n; ++i) // trick
         {
             if (arr[i-1] > arr[i])
             {
