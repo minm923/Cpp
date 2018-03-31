@@ -1,5 +1,10 @@
 #include <iostream>
 
+int sqr(int a)
+{
+    return a * a;
+}
+
 int pow2(int n)
 {
     if (n < 0) return -1;
@@ -8,19 +13,15 @@ int pow2(int n)
     {
         return 1;
     }
-    else if (1 == n)
-    {
-        return 2;
-    }
     else
     {
         if (0 == (n & 1))
         {
-            return (pow2(n>>1)) << 1;
+            return sqr(pow2(n>>1));
         }
         else
         {
-            return (pow2(n>>1) << 1) * 2;
+            return sqr(pow2(n>>1)) * 2;
         }
     }
 }
