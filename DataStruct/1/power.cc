@@ -15,14 +15,7 @@ int pow2(int n)
     }
     else
     {
-        if (0 == (n & 1))
-        {
-            return sqr(pow2(n>>1));
-        }
-        else
-        {
-            return sqr(pow2(n>>1)) * 2;
-        }
+        return (0 == (n & 1)) ? sqr(pow2(n>>1)) : sqr(pow2(n>>1)) * 2; // trick
     }
 }
 
