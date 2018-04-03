@@ -12,11 +12,12 @@ private:
     Rank _size;
     int _capacity;
     T*  _elem;
-
+    
+    // core function
     void copyFrom(T const* A, Rank lo, Rank hi);
 
-/*
     void expand();
+/*
     void shrink();
     bool bubble(Rank lo, Rank hi);
     void bubbleSort(Rank lo, Rank hi);
@@ -46,18 +47,14 @@ public:
     Vector (T const* A, Rank n)
     { copyFrom(A, 0, n); }
 
+    Vector(const Vector<T>& that, Rank lo, Rank hi)
+    { copyFrom(that._elem, lo, hi); }
+
     // copy construct
     Vector(const Vector<T>& that)
-        : _capacity(that._capacity),
-          _size(0)
-    {
-        _elem      = new T[_capacity];
-        for ( ; _size<that._size; ++_size)
-        {
-            _elem[_size] = that._elem[_size];
-        }
-    }
+    { copyFrom(that._elem, 0, that._size); }
 
+    // exception safe
     Vector<T>& operator=(const Vector<T>& that)
     {
         Vector<T> t(that);
@@ -85,8 +82,25 @@ void Vector<T>::copyFrom(T const* A, Rank lo, Rank hi)
     }
 }
 
+template <typename T>
+void Vector<T>::expand()
+{
+    if (_size < _capacity) return;
+    if (_capacity < DEFAULT_CAPACITY) _capacity = DEFAULT_CAPACITY;
+
+    T* newElem = new T[_capacity << 1];
+
+    for (int i=0; i<_size; ++i)
+        newElem[i] = _elem[i];
+    
+    _capacity <<= 1;
+    delete [] _elem;
+    _elem = newElem;
+}
+
 int main(int argc, char * argv[])
 {
+    Vector<int> myv;
     return 0;
 }
 
