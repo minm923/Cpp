@@ -82,7 +82,11 @@ public:
     Rank insert(const T& e) { insert(_size, e); }
     Rank insert(Rank r, const T& e);
     T remove(Rank r);
-    int  remove(Rank lo, Rank hi);// [lo, hi)
+    int remove(Rank lo, Rank hi);// [lo, hi)
+    int deduplicate();// 无序去重
+    void traverse(void (*pf)(T& e));
+    template<typename VST> void traverse(VST& visit);//  函数对象
+    
 };
 
 // [lo,hi)
@@ -183,16 +187,50 @@ int Vector<T>::remove(Rank lo, Rank hi)
     return hi-lo;
 }
 
+template<typename T>
+int Vector<T>::deduplicate()
+{
+    int oldSize = _size;
+    Rank i = 1;
+    while (i < _size)
+    {
+        (find(_elem[i], 0, i) < 0) ? ++i : remove(i);// trick
+    }
+
+    return oldSize - _size;
+}
+
+template<typename T>
+void Vector<T>::traverse(void (*pf)(T& e))
+{
+    for (Rank i=0; i < _size; ++i)
+        pf(_elem[i]);
+}
+
+template <typename T> 
+template <typename VST>
+void Vector<T>::traverse(VST& visit)
+{
+    for (Rank i=0; i < _size; ++i)
+        visit(_elem[i]);
+}
+
 template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template<typename T> static bool lt(T& a, T& b) { return a < b; }
 template<typename T> static bool eq(T* a, T* b) { return eq(*a, *b); }
 template<typename T> static bool eq(T& a, T& b) { return a == b; }
 
+void printv(int& e)
+{
+    std::cout << e << std::endl;
+}
+
 int main(int argc, char * argv[])
 {
     int arr[] = {1, 2, 3, 4, 5, 6};
     Vector<int> myv(arr, 0, 6);
-    std::cout << myv[2] << std::endl;
+    myv.traverse(printv);
+
     return 0;
 }
 
