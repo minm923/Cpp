@@ -190,7 +190,9 @@ template<typename T> static bool eq(T& a, T& b) { return a == b; }
 
 int main(int argc, char * argv[])
 {
-    Vector<int> myv;
+    int arr[] = {1, 2, 3, 4, 5, 6};
+    Vector<int> myv(arr, 0, 6);
+    std::cout << myv[2] << std::endl;
     return 0;
 }
 
