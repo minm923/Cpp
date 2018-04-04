@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <stdlib.h>
 
 typedef int Rank;
 
@@ -15,10 +16,10 @@ private:
     
     // core function
     void copyFrom(T const* A, Rank lo, Rank hi);
-
     void expand();
-/*
     void shrink();
+
+/*
     bool bubble(Rank lo, Rank hi);
     void bubbleSort(Rank lo, Rank hi);
     Rank max(Rank lo, Rank hi);
@@ -65,7 +66,23 @@ public:
         return *this;
     }
 
+    // deconstruct
     ~Vector() { delete [] _elem; }
+
+    T& operator[] (Rank k) const
+    {
+        return _elem[k];// assert: 0 <= r < _size
+    }
+
+    Rank size() const { return _size; }
+    void unsort(Rank lo, Rank hi);
+
+    Rank find(const T& e) const { find(e, 0, _size); }
+    Rank find(const T& e, Rank lo, Rank hi) const;
+    Rank insert(const T& e) { insert(_size, e); }
+    Rank insert(Rank r, const T& e);
+    T remove(Rank r);
+    int  remove(Rank lo, Rank hi);// [lo, hi)
 };
 
 // [lo,hi)
@@ -97,6 +114,79 @@ void Vector<T>::expand()
     delete [] _elem;
     _elem = newElem;
 }
+
+template<typename T>
+void Vector<T>::shrink()
+{
+    if (_capacity < (DEFAULT_CAPACITY << 1)) return;
+    if ((_size << 2) > _capacity) return;
+
+    T* newElem = new T[_capacity >> 1];
+    for (int i=0; i<_size; i++)
+        newElem[i] = _elem[i];
+
+    _capacity >>= 1;
+    delete [] _elem;
+    _elem = newElem;
+}
+
+template<typename T>
+void Vector<T>::unsort(Rank lo, Rank hi)
+{
+    T* V = _elem + lo;
+
+    for (Rank i=hi-lo; i>0; --i)// trick
+        std::swap(V[i-1], V[rand()%i]);
+}
+
+template<typename T>
+Rank Vector<T>::find(const T& e, Rank lo, Rank hi) const
+{
+    while ( (lo < hi--) && (e != _elem[hi]) );// trick
+    return hi;
+}
+
+template<typename T>
+Rank Vector<T>::insert(Rank r, const T& e)
+{
+    expand();
+
+    for (int i=_size; i>r; --i)
+        _elem[i] = _elem[i-1];
+
+    _elem[r] = e;
+    ++_size;
+    
+    return r;
+}
+
+template<typename T>
+T Vector<T>::remove(Rank r)
+{
+    T e = _elem[r];
+    remove(r, r+1);
+
+    return e;
+}
+
+template<typename T>
+int Vector<T>::remove(Rank lo, Rank hi)
+{
+    if (lo == hi) return 0;
+
+    while (hi < _size)
+        _elem[lo++] = _elem[hi++];
+
+    _size = lo;
+    shrink();
+
+    return hi-lo;
+}
+
+template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
+template<typename T> static bool lt(T& a, T& b) { return a < b; }
+template<typename T> static bool eq(T* a, T* b) { return eq(*a, *b); }
+template<typename T> static bool eq(T& a, T& b) { return a == b; }
 
 int main(int argc, char * argv[])
 {
