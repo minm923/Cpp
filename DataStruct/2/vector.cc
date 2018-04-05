@@ -75,6 +75,7 @@ public:
     }
 
     Rank size() const { return _size; }
+    bool empty() const { return !_size; }
     void unsort(Rank lo, Rank hi);
 
     Rank find(const T& e) const { find(e, 0, _size); }
@@ -84,9 +85,21 @@ public:
     T remove(Rank r);
     int remove(Rank lo, Rank hi);// [lo, hi)
     int deduplicate();// 无序去重
+    int uniquify();// 有序去重
     void traverse(void (*pf)(T& e));
     template<typename VST> void traverse(VST& visit);//  函数对象
     
+    int disordered() const
+    {
+        int n = 0;
+
+        for (int i=1; i<_size; ++i)
+            if (_elem[i-1] > _elem[i]) ++n;
+
+        return n;
+    }
+
+
 };
 
 // [lo,hi)
@@ -213,7 +226,39 @@ void Vector<T>::traverse(VST& visit)
 {
     for (Rank i=0; i < _size; ++i)
         visit(_elem[i]);
+
+    std::cout << std::endl;
 }
+
+template <typename T>
+int template<T>::uniquify()
+{
+    Rank i = 0;
+    Rank j = 0;
+
+    while (++j < _size)
+    {
+        if (_elem[j] != _elem[i])
+        {
+            _elem[++i] = _elem[j];
+        }
+    }
+
+    _size = ++i;
+    shrink();
+
+    return j - i;
+}
+
+// function obj
+template<typename T>
+struct Increase
+{
+    virtual void operator()(T& e)
+    {
+        ++e;
+    }
+};
 
 template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template<typename T> static bool lt(T& a, T& b) { return a < b; }
@@ -222,13 +267,16 @@ template<typename T> static bool eq(T& a, T& b) { return a == b; }
 
 void printv(int& e)
 {
-    std::cout << e << std::endl;
+    std::cout << e << ' ';
 }
 
 int main(int argc, char * argv[])
 {
     int arr[] = {1, 2, 3, 4, 5, 6};
     Vector<int> myv(arr, 0, 6);
+    myv.traverse(printv);
+    Increase<int> foo;
+    myv.traverse(foo);
     myv.traverse(printv);
 
     return 0;
