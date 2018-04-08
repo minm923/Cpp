@@ -99,6 +99,11 @@ public:
         return n;
     }
 
+    Rank search(const T& e) const
+    { return (0 >= _size) ? -1 : search(e, 0, _size); }
+
+    //[lo, hi)
+    Rank search(const T& e, Rank lo, Rank hi) const;
 
 };
 
@@ -259,6 +264,30 @@ struct Increase
         ++e;
     }
 };
+
+// [lo, hi)
+template<typename T>
+Rank Vector<T>::search(const T& e, Rank lo, Rank hi) const
+{
+    while (lo < hi)
+    {
+        int mid = (hi - lo) / 2 + lo;
+        if (_elem[mid] > e)
+        {
+            hi = mid;
+        }
+        else if (_elem[mid] < e)
+        {
+            lo = mid + 1;
+        }
+        else
+        {
+            return mid;
+        }
+    }
+
+    return -1;
+}
 
 template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template<typename T> static bool lt(T& a, T& b) { return a < b; }
