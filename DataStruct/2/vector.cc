@@ -19,9 +19,9 @@ private:
     void expand();
     void shrink();
 
-/*
     bool bubble(Rank lo, Rank hi);
     void bubbleSort(Rank lo, Rank hi);
+/*
     Rank max(Rank lo, Rank hi);
     void selectionSort(Rank lo, Rank hi);
     void merge(Rank lo, Rank mi, Rank hi);
@@ -105,6 +105,8 @@ public:
     //[lo, hi)
     Rank search(const T& e, Rank lo, Rank hi) const;
 
+    // [lo, hi)
+    void sort(Rank lo, Rank hi);
 };
 
 // [lo,hi)
@@ -231,12 +233,10 @@ void Vector<T>::traverse(VST& visit)
 {
     for (Rank i=0; i < _size; ++i)
         visit(_elem[i]);
-
-    std::cout << std::endl;
 }
 
 template <typename T>
-int template<T>::uniquify()
+int Vector<T>::uniquify()
 {
     Rank i = 0;
     Rank j = 0;
@@ -289,6 +289,37 @@ Rank Vector<T>::search(const T& e, Rank lo, Rank hi) const
     return -1;
 }
 
+template<typename T>
+void Vector<T>::sort(Rank lo, Rank hi)
+{
+    bubbleSort(0, _size);
+    return ;
+}
+
+
+template<typename T>
+void Vector<T>::bubbleSort(Rank lo, Rank hi)
+{
+    while(!bubble(lo, hi--));
+}
+
+template<typename T>
+bool Vector<T>::bubble(Rank lo, Rank hi)
+{
+    bool sorted = true;
+
+    while (++lo < hi)
+    {
+        if (_elem[lo-1] > _elem[lo])
+        {
+            sorted = false;
+            std::swap(_elem[lo-1], _elem[lo]);
+        }
+    }
+
+    return sorted;
+}
+
 template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template<typename T> static bool lt(T& a, T& b) { return a < b; }
 template<typename T> static bool eq(T* a, T* b) { return eq(*a, *b); }
@@ -301,12 +332,13 @@ void printv(int& e)
 
 int main(int argc, char * argv[])
 {
-    int arr[] = {1, 2, 3, 4, 5, 6};
+    int arr[] = {6, 5, 4, 3, 2, 1};
     Vector<int> myv(arr, 0, 6);
     myv.traverse(printv);
-    Increase<int> foo;
-    myv.traverse(foo);
+    myv.sort(0, 1);
+    std::cout << std::endl;
     myv.traverse(printv);
+    std::cout << std::endl;
 
     return 0;
 }
