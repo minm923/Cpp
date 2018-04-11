@@ -292,7 +292,7 @@ Rank Vector<T>::search(const T& e, Rank lo, Rank hi) const
 template<typename T>
 void Vector<T>::sort(Rank lo, Rank hi)
 {
-    bubbleSort(0, _size);
+    bubbleSort(lo, hi);
     return ;
 }
 
