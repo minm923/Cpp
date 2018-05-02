@@ -21,11 +21,14 @@ private:
 
     bool bubble(Rank lo, Rank hi);
     void bubbleSort(Rank lo, Rank hi);
+
+    void merge(Rank lo, Rank mi, Rank hi);
+    Rank mergeGetMin(Rank& Start1, Rank End1, Rank& Start2, Rank End2);
+    void mergeSort(Rank lo, Rank hi);
+
 /*
     Rank max(Rank lo, Rank hi);
     void selectionSort(Rank lo, Rank hi);
-    void merge(Rank lo, Rank mi, Rank hi);
-    void mergeSort(Rank lo, Rank hi);
     Rank partition(Rank lo, Rank hi);
     void quickSort(Rank lo, Rank hi);
     void heapSort(Rank lo, Rank hi);
@@ -292,7 +295,8 @@ Rank Vector<T>::search(const T& e, Rank lo, Rank hi) const
 template<typename T>
 void Vector<T>::sort(Rank lo, Rank hi)
 {
-    bubbleSort(lo, hi);
+    //bubbleSort(lo, hi);
+    mergeSort(lo, hi);
     return ;
 }
 
@@ -320,6 +324,66 @@ bool Vector<T>::bubble(Rank lo, Rank hi)
     return sorted;
 }
 
+// [lo, hi)
+template<typename T>
+void Vector<T>::mergeSort(Rank lo, Rank hi)
+{
+    if (hi - lo < 2) return ;
+    int mid = ((hi - lo) >> 1) + lo;
+    mergeSort(lo, mid);
+    mergeSort(mid, hi);
+    merge(lo, mid, hi);
+}
+
+// [lo, mid), [mid, hi)
+template<typename T>
+void Vector<T>::merge(Rank lo, Rank mid, Rank hi)
+{
+    Rank Start1 = lo;
+    Rank End1   = mid;
+    Rank Start2 = mid;
+    Rank End2   = hi;
+
+    int iLen   = hi - lo;
+    T*  arr    = new T[iLen];
+
+    int index  = 0;
+    while (index < iLen)
+    {
+        Rank i  = mergeGetMin(Start1, End1, Start2, End2);
+        arr[index++] = _elem[i];
+    }
+
+    index =  0;
+    while (index  < iLen)
+    {
+        _elem[lo++] = arr[index++];
+    }
+
+    delete[] arr;
+}
+
+template<typename T>
+Rank Vector<T>::mergeGetMin(Rank& Start1, Rank End1, Rank& Start2, Rank End2)
+{
+    if (Start1 >= End1 && Start2 >= End2)
+        return -1;
+
+    if (Start1 < End1 && Start2 < End2)
+    {
+        return _elem[Start1] > _elem[Start2] ? Start2++ : Start1++;
+    }
+    else if (Start1 < End1 && Start2 >= End2)
+    {
+        return Start1++;
+    }
+    else// Start2 < End2 && Start1 >= End1
+    {
+        return Start2++;
+    }
+}
+
+
 template<typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template<typename T> static bool lt(T& a, T& b) { return a < b; }
 template<typename T> static bool eq(T* a, T* b) { return eq(*a, *b); }
@@ -335,8 +399,8 @@ int main(int argc, char * argv[])
     int arr[] = {6, 5, 4, 3, 2, 1};
     Vector<int> myv(arr, 0, 6);
     myv.traverse(printv);
-    myv.sort(0, 1);
     std::cout << std::endl;
+    myv.sort(0, 6);
     myv.traverse(printv);
     std::cout << std::endl;
 
